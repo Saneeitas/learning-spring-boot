@@ -41,7 +41,9 @@ public class UserService {
         return null; // User not found
     }
 
-   
+    public boolean deleteUser(String id) {
+        return users.removeIf(user -> user.getId().equals(id));
+    }
 
     
 }
