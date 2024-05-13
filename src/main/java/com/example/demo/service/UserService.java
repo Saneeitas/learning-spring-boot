@@ -19,7 +19,7 @@ public class UserService {
 
     public User createUser(User user) {
         // Add logic for ID generation, validation, etc.
-         user.setId(UUID.randomUUID().toString());
+        user.setId(UUID.randomUUID().toString());
         users.add(user);
         return user;
     }
@@ -28,6 +28,20 @@ public class UserService {
         return users;
       
     }
+
+    public User updateUser(String id, User updatedUser) {
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
+            if (user.getId().equals(id)) {
+                updatedUser.setId(id); // Ensure the ID remains the same
+                users.set(i, updatedUser);
+                return updatedUser;
+            }
+        }
+        return null; // User not found
+    }
+
+   
 
     
 }
