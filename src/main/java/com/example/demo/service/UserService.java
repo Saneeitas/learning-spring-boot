@@ -33,7 +33,7 @@ public class UserService {
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
             if (user.getId().equals(id)) {
-                updatedUser.setId(id); // Ensure the ID remains the same
+                updatedUser.setId(id);
                 users.set(i, updatedUser);
                 return updatedUser;
             }
