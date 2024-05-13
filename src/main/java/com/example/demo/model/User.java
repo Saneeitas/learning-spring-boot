@@ -7,7 +7,7 @@ public class User {
     private String name;
 
     public User() {
-        this.id = UUID.randomUUID().toString(); // Generate a random UUID as the ID
+        this.id = UUID.randomUUID().toString();
     }
 
     // Getters and setters
