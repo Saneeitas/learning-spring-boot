@@ -26,12 +26,7 @@ public class DemoController {
 
     @GetMapping("/")
     public String home() {
-        return "Home Page";
-    }
-
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello World!";
+        return "Hello Spring Boot!!";
     }
 
     @GetMapping("/greeting")
@@ -44,12 +39,12 @@ public class DemoController {
         return userService.getUsers();
     }
 
-    @PostMapping("/users") // Create a user
+    @PostMapping("/user") // Create a user
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
 
-    @PutMapping("/users/{id}") // Update a user
+    @PutMapping("/user/{id}") // Update a user
     public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
         User user = userService.updateUser(id, updatedUser);
         if (user != null) {
@@ -59,7 +54,7 @@ public class DemoController {
         }
     }
 
-    @DeleteMapping("/users/{id}") // Delete a user
+    @DeleteMapping("/user/{id}") // Delete a user
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         boolean deleted = userService.deleteUser(id);
         if (deleted) {
