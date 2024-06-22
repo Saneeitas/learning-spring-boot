@@ -1,0 +1,39 @@
+@Service
+public class UserService {
+
+    private final UserRepository userRepository;
+
+    // Constructor Injection
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    // Business logic methods using userRepository
+}
+
+
+
+@Service
+public class UserService {
+
+    private UserRepository userRepository;
+
+    // Setter Injection
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    // Business logic methods using userRepository
+}
+
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Business logic methods using userRepository
+}
