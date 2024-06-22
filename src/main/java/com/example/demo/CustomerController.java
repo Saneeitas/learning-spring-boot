@@ -13,8 +13,22 @@ import java.util.List;
 @RequestMapping("/customers")
 public class CustomerController {
 
-    @Autowired
+    //  @Autowired
+    //  private CustomerRepository customerRepository;
+
+    // private final CustomerRepository customerRepository;
+    // @Autowired
+    // public CustomerController(CustomerRepository customerRepository) {
+    //     this.customerRepository = customerRepository;
+    // }
+
     private CustomerRepository customerRepository;
+    @Autowired
+    public void setCustomerRepository(CustomerRepository customerRepository){
+        this.customerRepository = customerRepository;
+    }
+
+
 
     @GetMapping
     public List<Customer> getAllCustomers() {
