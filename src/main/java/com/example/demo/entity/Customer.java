@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Customer {
@@ -12,15 +15,38 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "First name is mandatory")
+    @Size(max = 50)
     private String firstName;
+
+    @NotBlank(message = "Last name is mandatory")
+    @Size(max = 50)
     private String lastName;
+
+    @Email(message = "Email should be valid")
+    @Size(max = 100)
     private String email;
+
+    @NotBlank(message = "Phone number 1 is mandatory")
+    @Size(max = 20)
     private String phoneNumber1;
+
+    @Size(max = 20)
     private String phoneNumber2;
+
+    @Size(max = 100)
     private String addressLine1;
+
+    @Size(max = 100)
     private String addressLine2;
+
+    @Size(max = 50)
     private String city;
+
+    @Size(max = 50)
     private String state;
+
+    @Size(max = 20)
     private String zipCode;
 
     public Long getId() {
