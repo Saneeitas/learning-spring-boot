@@ -1,57 +1,71 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CustomerDTO;
 import com.example.demo.entity.Customer;
 import com.example.demo.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 @Validated
 public class CustomerController {
 
-    private final CustomerService customerService;
-
     @Autowired
-    public CustomerController(CustomerService customerService) {
-        this.customerService = customerService;
-    }
+    private CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public List<EntityModel<Customer>> getAllCustomers() {
         List<Customer> customers = customerService.getAllCustomers();
-        return ResponseEntity.ok(customers);
+        return customers.stream().map(customer -> EntityModel.of(customer,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomerById(customer.getId())).withSelfRel()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> getCustomerById(@PathVariable @Min(1) Long id) {
-        return customerService.getCustomerById(id)
-                .map(customer -> ResponseEntity.ok().body(customer))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public ResponseEntity<EntityModel<CustomerDTO>> getCustomerById(@PathVariable @Min(1) Long id) {
+        Optional<Customer> customer = customerService.getCustomerById(id);
+        if (customer.isPresent()) {
+            EntityModel<Customer> resource = EntityModel.of(customer.get(),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getAllCustomers()).withRel("all-customers"));
+            return (ResponseEntity<EntityModel<CustomerDTO>>) ResponseEntity.ok();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(EntityModel.of(new CustomerDTO(), 
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getAllCustomers()).withRel("all-customers")));
+        }
     }
 
     @PostMapping
-    public ResponseEntity<Customer> addCustomer(@Valid @RequestBody Customer customer) {
-        Customer savedCustomer = customerService.addCustomer(customer);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
+    public ResponseEntity<EntityModel<Customer>> addCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+        Customer savedCustomer = customerService.saveCustomer(customerDTO);
+        EntityModel<Customer> resource = EntityModel.of(savedCustomer,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomerById(savedCustomer.getId())).withSelfRel());
+        return ResponseEntity.status(HttpStatus.CREATED).body(resource);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable @Min(1) Long id, @Valid @RequestBody Customer customerDetails) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customerDetails);
-        return ResponseEntity.status(HttpStatus.OK).body(updatedCustomer);
+    public ResponseEntity<EntityModel<Customer>> updateCustomer(@PathVariable @Min(1) Long id, @Valid @RequestBody CustomerDTO customerDTO) {
+        Customer updatedCustomer = customerService.updateCustomer(id, customerDTO);
+        EntityModel<Customer> resource = EntityModel.of(updatedCustomer,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(CustomerController.class).getCustomerById(updatedCustomer.getId())).withSelfRel());
+        return ResponseEntity.ok(resource);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable @Min(1) Long id) {
         customerService.deleteCustomer(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Delete Successfully");
+        return ResponseEntity.noContent().build();
     }
 }
